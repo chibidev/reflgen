@@ -10,7 +10,7 @@ install:
     - cd ..
     - git clone https://github.com/chibidev/git-dependencies.git
     - export PATH=$PATH:`pwd`/git-dependencies
-    - cd emgen
+    - cd reflgen
     - brew install python3 llvm
     - export LLVM_CONFIG=`find /usr/local/Cellar -name llvm-config`
 
