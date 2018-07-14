@@ -55,11 +55,11 @@ namespace linq {
         template<typename Iterator, typename Predicate>
         class filter_iterator {
         public:
-            using difference_type = Iterator::difference_type;
-            using value_type = Iterator::value_type;
-            using pointer = Iterator::pointer;
-            using reference = Iterator::reference;
-            using iterator_category = Iterator::iterator_category;
+            using difference_type = typename Iterator::difference_type;
+            using value_type = typename Iterator::value_type;
+            using pointer = typename Iterator::pointer;
+            using reference = typename Iterator::reference;
+            using iterator_category = typename Iterator::iterator_category;
 
             template<typename RangeIterator, typename FilterPredicate>
             filter_iterator(RangeIterator&& begin, RangeIterator&& end, RangeIterator&& current, FilterPredicate&& predicate)
@@ -151,11 +151,11 @@ namespace linq {
         template<typename Iterator, typename Transformer>
         class transform_iterator {
         public:
-            using difference_type = Iterator::difference_type;
-            using value_type = Iterator::value_type;
-            using pointer = Iterator::pointer;
-            using reference = Iterator::reference;
-            using iterator_category = Iterator::iterator_category;
+            using difference_type = typename Iterator::difference_type;
+            using value_type = typename Iterator::value_type;
+            using pointer = typename Iterator::pointer;
+            using reference = typename Iterator::reference;
+            using iterator_category = typename Iterator::iterator_category;
 
             template<typename RangeIterator, typename Callable>
             transform_iterator(RangeIterator&& current, Callable&& transformer)
