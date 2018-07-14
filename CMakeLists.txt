@@ -12,7 +12,7 @@ project (reflgen)
 
 if (not MSVC)
     set(CXX_FLAGS "-Wall -Wextra -Weffc++")
-endif
+endif()
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CXX_FLAGS}")
 
@@ -27,9 +27,9 @@ add_executable(reflgen
 )
 target_include_directories(reflgen PRIVATE ${CMAKE_SOURCE_DIR}/src)
 if (MSVC)
-target_compile_options(reflgen PRIVATE /std:c++17)
-else
+    target_compile_options(reflgen PRIVATE /std:c++17)
+else()
     target_compile_options(reflgen PRIVATE -std=c++17)
-endif
+endif()
 target_link_libraries(reflgen PRIVATE cppast cxxopts)
 
