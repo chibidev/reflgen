@@ -30,7 +30,7 @@ add_executable(reflgen
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     target_compile_options(reflgen PRIVATE /std:c++17)
 else()
-    target_compile_options(reflgen PRIVATE -std=c++17)
+    target_compile_options(reflgen PRIVATE -std=c++1z)
 endif()
 target_include_directories(reflgen PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(reflgen PRIVATE cppast cxxopts)

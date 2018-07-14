@@ -55,6 +55,12 @@ namespace linq {
         template<typename Iterator, typename Predicate>
         class filter_iterator {
         public:
+            using difference_type = Iterator::difference_type;
+            using value_type = Iterator::value_type;
+            using pointer = Iterator::pointer;
+            using reference = Iterator::reference;
+            using iterator_category = Iterator::iterator_category;
+
             template<typename RangeIterator, typename FilterPredicate>
             filter_iterator(RangeIterator&& begin, RangeIterator&& end, RangeIterator&& current, FilterPredicate&& predicate)
             : _begin(std::forward<RangeIterator>(begin)),
@@ -145,6 +151,12 @@ namespace linq {
         template<typename Iterator, typename Transformer>
         class transform_iterator {
         public:
+            using difference_type = Iterator::difference_type;
+            using value_type = Iterator::value_type;
+            using pointer = Iterator::pointer;
+            using reference = Iterator::reference;
+            using iterator_category = Iterator::iterator_category;
+
             template<typename RangeIterator, typename Callable>
             transform_iterator(RangeIterator&& current, Callable&& transformer)
             : _current(std::forward<RangeIterator>(current)),
