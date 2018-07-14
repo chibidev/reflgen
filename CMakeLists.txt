@@ -10,7 +10,8 @@ add_subdirectory(dependencies/cppast)
 
 project (reflgen)
 
-if (not MSVC)
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+else()
     set(CXX_FLAGS "-Wall -Wextra -Weffc++")
 endif()
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CXX_FLAGS}")
@@ -25,11 +26,12 @@ add_executable(reflgen
     src/ranges.h
     src/utilities/string.h
 )
-target_include_directories(reflgen PRIVATE ${CMAKE_SOURCE_DIR}/src)
-if (MSVC)
+
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     target_compile_options(reflgen PRIVATE /std:c++17)
 else()
     target_compile_options(reflgen PRIVATE -std=c++17)
 endif()
+target_include_directories(reflgen PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(reflgen PRIVATE cppast cxxopts)
 
