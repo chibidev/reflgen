@@ -10,7 +10,9 @@ add_subdirectory(dependencies/cppast)
 
 project (reflgen)
 
-set(CXX_FLAGS "-Wall -Wextra -Weffc++")
+if (not MSVC)
+    set(CXX_FLAGS "-Wall -Wextra -Weffc++")
+endif
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CXX_FLAGS}")
 
@@ -24,6 +26,10 @@ add_executable(reflgen
     src/utilities/string.h
 )
 target_include_directories(reflgen PRIVATE ${CMAKE_SOURCE_DIR}/src)
-target_compile_options(reflgen PRIVATE -std=c++1z)
+if (MSVC)
+target_compile_options(reflgen PRIVATE /std:c++17)
+else
+    target_compile_options(reflgen PRIVATE -std=c++17)
+endif
 target_link_libraries(reflgen PRIVATE cppast cxxopts)
 
