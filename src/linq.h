@@ -97,6 +97,10 @@ namespace linq {
                 return _current != other._current;
             }
 
+            bool operator==(const filter_iterator& other) {
+                return !(*this != other);
+            }
+
         private:
             void advance_while_first_valid() {
                 while (_current != _end && !_predicate(*_current))
@@ -179,6 +183,10 @@ namespace linq {
 
             bool operator!=(const transform_iterator& other) {
                 return _current != other._current;
+            }
+
+            bool operator==(const transform_iterator& other) {
+                return !(*this != other);
             }
 
         private:
