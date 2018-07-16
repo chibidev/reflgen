@@ -2,7 +2,7 @@ resources:
 - repo: self
   clean: true
 phases:
-- phase: Build_Windows x64
+- phase: Build_Windows_x64
   queue:
     name: Hosted VS2017
     demands: 
@@ -124,13 +124,13 @@ phases:
       PathtoPublish: 'release/reflgen-$(ReleaseVersionNumber)-macOS.zip'
       ArtifactName: 'reflgen-macOS'
 
-- phase: Agent_phase
+- phase: Create_GitHub_Release
   queue:
     name: Hosted VS2017
     demands: npm
   dependsOn: 
-    - Phase_3
-    - Phase_1
+    - Build_Windows_x64
+    - Build_macOS
   condition: succeeded()
 
   steps:
