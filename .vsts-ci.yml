@@ -1,0 +1,158 @@
+resources:
+  - repo: self
+    clean: true
+phases:
+  - phase: Build_Windows x64
+    queue:
+      name: Hosted VS2017
+      condition: succeeded()
+      demands: 
+        - cmake
+        - msbuild
+        - visualstudio
+
+    steps:
+      - bash: |  
+          RELEASE_VERSION_NUMBER=`cat src/main.cpp | grep version | grep static | cut -d '"' -f 2`
+          echo "##vso[task.setvariable variable=ReleaseVersionNumber]$RELEASE_VERSION_NUMBER" 
+        displayName: Set version number
+
+      - task: jungeriusit.jungit-choco.jungit-chocoinstaller.ChocoInstallPackage@1
+        displayName: Install LLVM
+        inputs:
+          packageId: llvm
+
+      - task: fakhrulhilal-maktum.GitDownloader.git-downloader.GitDownloader@0
+        displayName: Fetch git-dependencies
+        inputs:
+          RepositoryUrl: 'https://github.com/chibidev/git-dependencies.git'
+          RepositoryPath: '$(Build.SourcesDirectory)/git-dependencies'
+
+      - task: PythonScript@0
+        displayName: Fetch dependencies
+        inputs:
+          scriptPath: '$(Build.SourcesDirectory)/git-dependencies/git-dependencies'
+          arguments: 'update -r'
+
+      - task: CMake@1
+        displayName: Generate solution
+        inputs:
+          cmakeArgs: '-Bbuild -H. -G "Visual Studio 15 2017 Win64" -DLLVM_VERSION_EXPLICIT=6.0.0 -DLIBCLANG_LIBRARY="C:/Program Files/LLVM/lib/libclang.lib" -DLIBCLANG_INCLUDE_DIR="C:/Program Files/LLVM/include" -DLIBCLANG_SYSTEM_INCLUDE_DIR="C:/Program Files/LLVM/lib/clang/6.0.0/include" -DCLANG_BINARY="C:/Program Files/LLVM/bin/clang++.exe"'
+
+      - task: VSBuild@1
+        displayName: Build solution
+        inputs:
+          solution: 'build/*.sln'
+          msbuildArgs: '/target:reflgen'
+          platform: x64
+          configuration: Release
+          msbuildArchitecture: x64
+
+      - bash: |  
+          mkdir -p "$BUILD_SOURCESDIRECTORY/release/reflgen"
+        
+          cp "$BUILD_SOURCESDIRECTORY/build/Release/reflgen.exe" "$BUILD_SOURCESDIRECTORY/release/reflgen/"
+          cp '/c/Program Files/LLVM/bin/libclang.dll' "$BUILD_SOURCESDIRECTORY/release/reflgen/"
+        displayName: Assemble release folder
+
+      - bash: 'find "$BUILD_SOURCESDIRECTORY/build" -iname "*.pdb"' 
+        displayName: Bash Script
+
+      - task: ArchiveFiles@2
+        displayName: Archive release
+        inputs:
+          rootFolderOrFile: 'release/reflgen'
+          archiveFile: 'release/reflgen-$(ReleaseVersionNumber)-x64.zip'
+
+      - task: PublishBuildArtifacts@1
+        displayName: Publish release
+        inputs:
+          PathtoPublish: 'release/reflgen-$(ReleaseVersionNumber)-x64.zip'
+          ArtifactName: 'reflgen-x64'
+
+  - phase: Build_macOS
+    queue:
+      name: Hosted macOS Preview
+      condition: succeeded()
+      demands: xcode
+    
+    steps:
+      - bash: |  
+          RELEASE_VERSION_NUMBER=`cat src/main.cpp | grep version | grep static | cut -d '"' -f 2`
+          echo "##vso[task.setvariable variable=ReleaseVersionNumber]$RELEASE_VERSION_NUMBER" 
+        displayName: Set version number
+
+      - bash: |  
+          brew install llvm
+          export LLVM_CONFIG=`find /usr/local/Cellar -name llvm-config`
+          echo "##vso[task.setvariable variable=LlvmConfigPath]$LLVM_CONFIG" 
+        displayName: Install LLVM
+
+      - bash: |  
+          git clone https://github.com/chibidev/git-dependencies.git
+          git-dependencies/git-dependencies update -r 
+        displayName: Fetch dependencies
+
+      - bash: 'cmake -Bbuild -H. -GXcode -DLLVM_VERSION_EXPLICIT=`clang -v 2>&1 | grep version | cut -d "" -f 4` -DLIBCLANG_INCLUDE_DIR=`$(LlvmConfigPath) --includedir` -DLIBCLANG_LIBRARY=/Applications/Xcode.app/Contents/Frameworks/libclang.dylib -DCLANG_BINARY=/usr/bin/clang -DLIBCLANG_SYSTEM_INCLUDE_DIR=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk -DCMAKE_BUILD_TYPE=Release' 
+        displayName: Generate project
+
+      - task: Xcode@5
+        displayName: Build project
+        inputs:
+          configuration: Release
+          sdk: macosx10.13
+          xcWorkspacePath: 'build/reflgen.xcodeproj'
+          scheme: reflgen
+          destinationPlatformOption: macOS
+
+      - bash: |  
+          mkdir -p "$BUILD_SOURCESDIRECTORY/release/reflgen"
+        
+          cp "$BUILD_SOURCESDIRECTORY/build/Release/reflgen"  "$BUILD_SOURCESDIRECTORY/release/reflgen/"
+          cp '/Applications/Xcode.app/Contents/Frameworks/libclang.dylib' "$BUILD_SOURCESDIRECTORY/release/reflgen/" 
+        displayName: Assemble release folder
+
+      - task: ArchiveFiles@2
+        displayName: Archive release
+        inputs:
+          rootFolderOrFile: 'release/reflgen'
+          archiveFile: 'release/reflgen-$(ReleaseVersionNumber)-macOS.zip'
+
+      - task: PublishBuildArtifacts@1
+        displayName: Publish release
+        inputs:
+          PathtoPublish: 'release/reflgen-$(ReleaseVersionNumber)-macOS.zip'
+          ArtifactName: 'reflgen-macOS'
+
+  - phase: Agent_phase
+    queue:
+      name: Hosted VS2017
+      dependsOn: 
+        - Phase_3
+        - Phase_1
+      condition: succeeded()
+      demands: npm
+
+    steps:
+    - task: DownloadBuildArtifacts@0
+      displayName: Download Build Artifacts
+      inputs:
+        downloadType: specific
+        downloadPath: '$(Build.SourcesDirectory)/artifacts'
+
+    - bash: |  
+        RELEASE_VERSION_NUMBER=`cat src/main.cpp | grep version | grep static | cut -d '"' -f 2`
+        echo "##vso[task.setvariable variable=ReleaseVersionNumber]$RELEASE_VERSION_NUMBER" 
+      displayName: Set version number
+
+    - task: marcelo-formentao.github-tools.github-release-publish-task.GitHubReleasePublish@0
+      displayName: Create or Modify GitHub Release
+      inputs:
+        githubEndpoint: GitHub
+        githubRepository: 'chibidev/reflgen'
+        githubTag: 'v$(ReleaseVersionNumber)'
+        githubReleaseTitle: 'reflgen v$(ReleaseVersionNumber)'
+        githubReleaseDraft: false
+        githubReleaseAsset: '$(Build.SourcesDirectory)/artifacts/*/*.zip'
+
+
