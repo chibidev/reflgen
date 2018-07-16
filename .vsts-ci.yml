@@ -5,11 +5,11 @@ phases:
 - phase: Build_Windows x64
   queue:
     name: Hosted VS2017
-    condition: succeeded()
-    demands: 
-      - cmake
-      - msbuild
-      - visualstudio
+  condition: succeeded()
+  demands: 
+    - cmake
+    - msbuild
+    - visualstudio
 
   steps:
   - bash: |  
@@ -73,8 +73,8 @@ phases:
 - phase: Build_macOS
   queue:
     name: Hosted macOS Preview
-    condition: succeeded()
-    demands: xcode
+  condition: succeeded()
+  demands: xcode
   
   steps:
   - bash: |  
@@ -127,11 +127,11 @@ phases:
 - phase: Agent_phase
   queue:
     name: Hosted VS2017
-    dependsOn: 
-      - Phase_3
-      - Phase_1
-    condition: succeeded()
-    demands: npm
+  dependsOn: 
+    - Phase_3
+    - Phase_1
+  condition: succeeded()
+  demands: npm
 
   steps:
   - task: DownloadBuildArtifacts@0
