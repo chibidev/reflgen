@@ -36,7 +36,8 @@ phases:
   - task: CMake@1
     displayName: Generate solution
     inputs:
-      cmakeArgs: '-Bbuild -H. -G "Visual Studio 15 2017 Win64" -DLLVM_VERSION_EXPLICIT=6.0.0 -DLIBCLANG_LIBRARY="C:/Program Files/LLVM/lib/libclang.lib" -DLIBCLANG_INCLUDE_DIR="C:/Program Files/LLVM/include" -DLIBCLANG_SYSTEM_INCLUDE_DIR="C:/Program Files/LLVM/lib/clang/6.0.0/include" -DCLANG_BINARY="C:/Program Files/LLVM/bin/clang++.exe"'
+      workingDirectory: build
+      cmakeArgs: '-G "Visual Studio 15 2017 Win64" -DLLVM_VERSION_EXPLICIT=6.0.0 -DLIBCLANG_LIBRARY="C:/Program Files/LLVM/lib/libclang.lib" -DLIBCLANG_INCLUDE_DIR="C:/Program Files/LLVM/include" -DLIBCLANG_SYSTEM_INCLUDE_DIR="C:/Program Files/LLVM/lib/clang/6.0.0/include" -DCLANG_BINARY="C:/Program Files/LLVM/bin/clang++.exe" ..'
 
   - task: VSBuild@1
     displayName: Build solution
