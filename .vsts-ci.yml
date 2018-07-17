@@ -55,9 +55,6 @@ phases:
       cp '/c/Program Files/LLVM/bin/libclang.dll' "$BUILD_SOURCESDIRECTORY/release/reflgen/"
     displayName: Assemble release folder
 
-  - bash: 'find "$BUILD_SOURCESDIRECTORY/build" -iname "*.pdb"' 
-    displayName: Bash Script
-
   - task: ArchiveFiles@2
     displayName: Archive release
     inputs:
@@ -93,7 +90,7 @@ phases:
       git-dependencies/git-dependencies update -r 
     displayName: Fetch dependencies
 
-  - bash: 'cmake -Bbuild -H. -GXcode -DLLVM_VERSION_EXPLICIT=`clang -v 2>&1 | grep version | cut -d "" -f 4` -DLIBCLANG_INCLUDE_DIR=`$(LlvmConfigPath) --includedir` -DLIBCLANG_LIBRARY=/Applications/Xcode.app/Contents/Frameworks/libclang.dylib -DCLANG_BINARY=/usr/bin/clang -DLIBCLANG_SYSTEM_INCLUDE_DIR=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk -DCMAKE_BUILD_TYPE=Release' 
+  - bash: 'cmake -Bbuild -H. -GXcode -DLLVM_VERSION_EXPLICIT=`clang -v 2>&1 | grep version | cut -d " " -f 4` -DLIBCLANG_INCLUDE_DIR=`$(LlvmConfigPath) --includedir` -DLIBCLANG_LIBRARY=/Applications/Xcode.app/Contents/Frameworks/libclang.dylib -DCLANG_BINARY=/usr/bin/clang -DLIBCLANG_SYSTEM_INCLUDE_DIR=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk -DCMAKE_BUILD_TYPE=Release' 
     displayName: Generate project
 
   - task: Xcode@5
