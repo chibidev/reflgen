@@ -5,8 +5,7 @@ phases:
 - phase: Build_Windows_x64
   queue:
     name: Hosted VS2017
-    demands: 
-      - cmake
+    demands:
       - msbuild
       - visualstudio
   condition: succeeded()
