@@ -1,6 +1,15 @@
 resources:
 - repo: self
   clean: true
+
+trigger:
+  branches:
+    include:
+    - master
+    exclude:
+    - tags/*
+    - refs/tags/*
+
 phases:
 - phase: Build_Windows_x64
   queue:
