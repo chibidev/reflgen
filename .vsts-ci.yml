@@ -185,3 +185,7 @@ phases:
 
   - script: 'conan upload -r cppreflect-bintray cppreflect/$(ReleaseVersionNumber)' 
     displayName: Upload conan package
+
+  - script: 'rm -rf ~/.conan' 
+    displayName: Cleanup conan settings
+
