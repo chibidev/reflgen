@@ -186,7 +186,7 @@ phases:
 
   - script: |  
      conan remote add cppreflect-bintray https://api.bintray.com/conan/chibidev/conan
-     conan user -p $(Bintray) -r cppreflect-bintray chibidev
+     conan user -p $BINTRAY -r cppreflect-bintray chibidev
     displayName: Add Bintray remote
 
   - script: 'conan upload -r cppreflect-bintray cppreflect/$(ReleaseVersionNumber)'
