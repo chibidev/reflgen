@@ -161,7 +161,7 @@ phases:
       githubReleaseDraft: false
       githubReleaseAsset: '$(Build.SourcesDirectory)/artifacts/*/*.zip'
 
-- phase: Release_conan package
+- phase: Release_conan_package
   queue:
     name: Hosted Linux Preview
   condition: succeeded()
