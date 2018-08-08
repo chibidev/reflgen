@@ -172,6 +172,9 @@ phases:
      echo "##vso[task.setvariable variable=ReleaseVersionNumber]$RELEASE_VERSION_NUMBER" 
     displayName: Set version number
 
+  - script: 'pip install -U setuptools'
+    displayName: Install setuptools
+
   - script: 'pip install --upgrade pip'
     displayName: Upgrade pip
 
