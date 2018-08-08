@@ -1,3 +1,8 @@
 [dependencies/cppast]
 url = https://github.com/chibidev/cppast.git
 ref = feature/additional-compiler-flags
+
+[dependencies/cxxopts]
+url = https://github.com/jarro2783/cxxopts.git
+ref = v2.1.1
+

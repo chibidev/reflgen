@@ -2,11 +2,12 @@ include(ExternalProject)
 
 cmake_minimum_required (VERSION 3.3)
 
-set(CPPAST_BUILD_TEST OFF)
-set(CPPAST_BUILD_EXAMPLE OFF)
-set(CPPAST_BUILD_TOOL OFF)
+set(CPPAST_BUILD_TEST OFF CACHE BOOL "")
+set(CPPAST_BUILD_EXAMPLE OFF CACHE BOOL "")
+set(CPPAST_BUILD_TOOL OFF CACHE BOOL "")
 
 add_subdirectory(dependencies/cppast)
+add_subdirectory(dependencies/cxxopts)
 
 project (reflgen)
 
