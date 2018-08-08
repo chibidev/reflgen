@@ -172,20 +172,23 @@ phases:
      echo "##vso[task.setvariable variable=ReleaseVersionNumber]$RELEASE_VERSION_NUMBER" 
     displayName: Set version number
 
-  - script: 'pip install conan' 
+  - script: 'pip install --upgrade pip'
+    displayName: Upgrade pip
+
+  - script: 'pip install conan'
     displayName: Install conan
 
-  - script: 'conan create . chibidev/stable' 
+  - script: 'conan create . chibidev/stable'
     displayName: Create conan package
 
   - script: |  
      conan remote add cppreflect-bintray https://api.bintray.com/conan/chibidev/conan
-     conan user -p $(Bintray) -r cppreflect-bintray chibidev 
+     conan user -p $(Bintray) -r cppreflect-bintray chibidev
     displayName: Add Bintray remote
 
-  - script: 'conan upload -r cppreflect-bintray cppreflect/$(ReleaseVersionNumber)' 
+  - script: 'conan upload -r cppreflect-bintray cppreflect/$(ReleaseVersionNumber)'
     displayName: Upload conan package
 
-  - script: 'rm -rf ~/.conan' 
+  - script: 'rm -rf ~/.conan'
     displayName: Cleanup conan settings
 
