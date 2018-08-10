@@ -153,8 +153,14 @@ phases:
   - script: 'conan create . chibidev/stable'
     displayName: Create conan package
 
+- task: CmdLine@1
+    displayName: Add Bintray repository
+    inputs:
+      filename: conan
+      arguments: 'remote add cppreflect-bintray https://api.bintray.com/conan/chibidev/conan'
+
   - task: CmdLine@1
-    displayName: Command Line Script
+    displayName: Login to Bintray
     inputs:
       filename: conan
       arguments: 'user -p $(Bintray) -r cppreflect-bintray chibidev'
