@@ -153,7 +153,7 @@ phases:
   - script: 'conan create . chibidev/stable'
     displayName: Create conan package
 
-- task: CmdLine@1
+  - task: CmdLine@1
     displayName: Add Bintray repository
     inputs:
       filename: conan
