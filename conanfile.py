@@ -3,7 +3,7 @@ from conans import ConanFile, CMake, tools
 
 class CppreflectConan(ConanFile):
     name = "cppreflect"
-    version = "latest"
+    version = "0.0.6"
     license = "<Put the package license here>"
     url = "https://github.com/chibidev/reflgen"
     description = "<Description of Cppreflect here>"

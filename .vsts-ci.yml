@@ -130,37 +130,6 @@ phases:
       PathtoPublish: 'release/reflgen-$(ReleaseVersionNumber)-macOS.zip'
       ArtifactName: 'reflgen-macOS'
 
-- phase: Create_GitHub_Release
-  queue:
-    name: Hosted VS2017
-    demands: npm
-  dependsOn: 
-    - Build_Windows_x64
-    - Build_macOS
-  condition: succeeded()
-
-  steps:
-  - task: DownloadBuildArtifacts@0
-    displayName: Download Build Artifacts
-    inputs:
-      downloadType: specific
-      downloadPath: '$(Build.SourcesDirectory)/artifacts'
-
-  - bash: |  
-      RELEASE_VERSION_NUMBER=`cat src/main.cpp | grep version | grep static | cut -d '"' -f 2`
-      echo "##vso[task.setvariable variable=ReleaseVersionNumber]$RELEASE_VERSION_NUMBER" 
-    displayName: Set version number
-
-  - task: marcelo-formentao.github-tools.github-release-publish-task.GitHubReleasePublish@0
-    displayName: Create or Modify GitHub Release
-    inputs:
-      githubEndpoint: GitHub
-      githubRepository: 'chibidev/reflgen'
-      githubTag: 'v$(ReleaseVersionNumber)'
-      githubReleaseTitle: 'reflgen v$(ReleaseVersionNumber)'
-      githubReleaseDraft: false
-      githubReleaseAsset: '$(Build.SourcesDirectory)/artifacts/*/*.zip'
-
 - phase: Release_conan_package
   queue:
     name: Hosted Linux Preview
@@ -184,10 +153,11 @@ phases:
   - script: 'conan create . chibidev/stable'
     displayName: Create conan package
 
-  - script: |  
-     conan remote add cppreflect-bintray https://api.bintray.com/conan/chibidev/conan
-     conan user -p $BINTRAY -r cppreflect-bintray chibidev
-    displayName: Add Bintray remote
+  - task: CmdLine@1
+    displayName: Command Line Script
+    inputs:
+      filename: conan
+      arguments: 'user -p $(Bintray) -r cppreflect-bintray chibidev'
 
   - script: 'conan upload -r cppreflect-bintray cppreflect/$(ReleaseVersionNumber)'
     displayName: Upload conan package
@@ -195,3 +165,34 @@ phases:
   - script: 'rm -rf ~/.conan'
     displayName: Cleanup conan settings
 
+- phase: Create_GitHub_Release
+  queue:
+    name: Hosted VS2017
+    demands: npm
+  dependsOn:
+    - Build_Windows_x64
+    - Build_macOS
+    - Release_conan_package
+  condition: succeeded()
+
+  steps:
+  - task: DownloadBuildArtifacts@0
+    displayName: Download Build Artifacts
+    inputs:
+      downloadType: specific
+      downloadPath: '$(Build.SourcesDirectory)/artifacts'
+
+  - bash: |
+      RELEASE_VERSION_NUMBER=`cat src/main.cpp | grep version | grep static | cut -d '"' -f 2`
+      echo "##vso[task.setvariable variable=ReleaseVersionNumber]$RELEASE_VERSION_NUMBER"
+    displayName: Set version number
+
+  - task: marcelo-formentao.github-tools.github-release-publish-task.GitHubReleasePublish@0
+    displayName: Create or Modify GitHub Release
+    inputs:
+      githubEndpoint: GitHub
+      githubRepository: 'chibidev/reflgen'
+      githubTag: 'v$(ReleaseVersionNumber)'
+      githubReleaseTitle: 'reflgen v$(ReleaseVersionNumber)'
+      githubReleaseDraft: false
+      githubReleaseAsset: '$(Build.SourcesDirectory)/artifacts/*/*.zip'
