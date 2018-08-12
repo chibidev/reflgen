@@ -157,7 +157,7 @@ phases:
     displayName: Add Bintray repository
     inputs:
       filename: conan
-      arguments: 'remote add cppreflect-bintray https://api.bintray.com/conan/chibidev/conan'
+      arguments: 'remote add cppreflect-bintray https://api.bintray.com/conan/chibidev/stable'
 
   - task: CmdLine@1
     displayName: Login to Bintray
