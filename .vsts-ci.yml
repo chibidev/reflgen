@@ -165,7 +165,7 @@ phases:
       filename: conan
       arguments: 'user -p $(Bintray) -r cppreflect-bintray chibidev'
 
-  - script: 'conan upload -r cppreflect-bintray cppreflect/$RELEASE_VERSION_NUMBER'
+  - script: 'conan upload -r cppreflect-bintray -c cppreflect/$RELEASE_VERSION_NUMBER'
     displayName: Upload conan package
 
   - script: 'rm -rf ~/.conan'
